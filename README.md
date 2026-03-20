@@ -478,3 +478,48 @@ This example demonstrates how to use and consume Terraform modules published on 
    - CIDR: 10.0.1.0/24
    - Availability Zone: eu-west-1b
    - Public access enabled
+
+### proj02-iam-users
+
+A Terraform module that provisions AWS IAM users and roles based on a YAML configuration.
+
+#### Features
+- **User Management**: Creates IAM users from YAML configuration file (`user-roles.yaml`)
+- **Role-Based Access**: Supports four predefined roles:
+  - `readonly`: Read-only access to AWS resources
+  - `developer`: Full access to VPC, EC2, and RDS
+  - `admin`: Administrator access
+  - `auditor`: Security audit access
+- **Automated Policy Attachment**: Automatically attaches AWS managed policies to roles
+- **Login Profiles**: Generates initial login profiles with auto-generated passwords for all users
+
+#### Configuration
+
+Edit `proj02-iam-users/user-roles.yaml` to define users and their roles:
+
+```yaml
+users:
+  - username: john
+    roles: [readonly, developer]
+  - username: jane
+    roles: [admin, auditor]
+  - username: lauro
+    roles: [readonly]
+```
+
+#### Deployment
+
+```bash
+cd proj02-iam-users
+terraform init
+terraform plan
+terraform apply
+```
+
+#### Requirements
+- Terraform >= 1.7
+- AWS Provider >= 5.0
+- AWS credentials configured for `eu-west-1` region
+
+#### Outputs
+- `passwords`: A map of automatically generated initial passwords for each user (store securely)
