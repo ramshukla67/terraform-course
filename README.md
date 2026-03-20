@@ -331,3 +331,46 @@ terraform destroy
 - [Terraform AWS VPC Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc)
 - [AWS VPC Documentation](https://docs.aws.amazon.com/vpc/)
 - [Terraform Getting Started](https://www.terraform.io/intro/index.html)
+
+# Terraform Infrastructure Learning Projects
+
+A collection of Terraform modules for learning and implementing AWS infrastructure components.
+
+## Projects
+
+### 06-resources: VPC with EC2 Web Server
+
+A complete AWS infrastructure setup demonstrating VPC networking and compute resource provisioning.
+
+**Deployed Resources:**
+- VPC with CIDR block 10.0.0.0/16
+- Public subnet (10.0.0.0/24)
+- Internet Gateway with route to 0.0.0.0/0
+- Route table associated with the subnet
+- EC2 t2.micro instance running NGINX with public IP assignment
+- Security Group allowing HTTP (80) and HTTPS (443) ingress from anywhere
+
+**Implementation Checklist:**
+1. ✓ Deploy a VPC and a subnet
+2. ✓ Deploy an internet gateway and associate it with the VPC
+3. ✓ Setup a route table with a route to the IGW and associate it with the subnet
+4. ✓ Deploy an EC2 instance inside of the created subnet and associate a public IP
+5. ✓ Associate a security group that allows public ingress
+6. ✓ Change the EC2 instance to use a publicly available NGINX AMI
+7. ✓ Destroy everything
+
+**Quick Start:**
+```bash
+cd 06-resources
+terraform init
+terraform plan
+terraform apply
+terraform destroy  # Clean up resources
+```
+
+**Configuration:**
+- **Region:** eu-west-1 (Ireland)
+- **Terraform Version:** >= 1.7.0, < 2.0.0
+- **AWS Provider Version:** ~> 5.0
+- **Instance Type:** t2.micro (eligible for free tier)
+- **AMI:** NGINX AMI (ami-0dfee6e7eb44d480b)
