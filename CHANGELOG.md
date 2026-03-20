@@ -3,6 +3,11 @@
 
 Added a complete Terraform Cloud OIDC integration project (`proj05-tf-cloud-oidc`) that demonstrates secure, keyless authentication between Terraform Cloud and AWS. The project includes AWS IAM OpenID Connect provider configuration, an admin automation role with assume role policy conditions, S3 bucket resource example, and full Terraform configuration with variables and provider setup. This enables organizations to eliminate static AWS credentials from Terraform Cloud by using OIDC-based federation.
 
+## [cff579e] - 2024-03-25
+### feat(17-workspaces): add files
+
+Added a new Terraform workspaces example module demonstrating multi-environment infrastructure management. The module includes provider configuration (AWS ~5.0, random ~3.0), environment-specific variable files for dev/int/staging/prod environments, and S3 bucket resources that scale from 1 to 3 buckets depending on the workspace. This example illustrates best practices for using Terraform workspaces to manage separate state files across multiple environments with a single configuration codebase.
+
 ## [a89f827] - 2024-03-25
 ### feat(proj03-import-lambda): add files
 
