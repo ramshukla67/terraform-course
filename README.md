@@ -523,3 +523,47 @@ terraform apply
 
 #### Outputs
 - `passwords`: A map of automatically generated initial passwords for each user (store securely)
+
+# Terraform Learning Course
+
+A comprehensive learning resource for Terraform, covering foundational concepts through advanced patterns.
+
+## Modules
+
+### 08-input-vars-locals-outputs
+
+**Purpose:** Demonstrates Terraform input variables, local values, and outputs in a practical multi-resource setup.
+
+**Key Concepts:**
+- **Input Variables** (`variables.tf`):
+  - String variables with validation rules
+  - Object-type variables with nested structure (ec2_volume_config)
+  - Map variables for flexible tagging (additional_tags)
+  - Sensitive variables that are not displayed in logs or output
+  - Default values and validation blocks
+
+- **Local Values** (`shared-locals.tf`):
+  - Simple local variables for project metadata (project, owner, cost center)
+  - Computed locals that aggregate values using functions (merge)
+  - Referencing other locals within local blocks
+  - Using locals with variables to build dynamic tag structures
+
+- **Outputs** (`outputs.tf`):
+  - Standard output declarations with descriptions
+  - Sensitive output flag to prevent value display
+  - Exposing resource attributes (S3 bucket name) for state queries
+  - Controlling sensitive data visibility in terraform output
+
+- **Variable Files** (`terraform.tfvars`, `override.tfvars`):
+  - Default values using .tfvars files
+  - Override behavior and file precedence
+  - Different organization strategies for complex configurations
+
+**Resources:**
+- `aws_s3_bucket`: S3 bucket with dynamic naming using random ID suffix
+- `random_id`: Ensures unique bucket names across deployments
+- `aws_ami`: Data source querying Ubuntu 22.04 LTS images
+
+**Configuration:**
+- Provider: AWS (eu-west-1), Terraform ~> 1.7.0
+- Dependencies: aws ~> 5.0, random ~> 3.0
