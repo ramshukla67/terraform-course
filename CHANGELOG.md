@@ -26,6 +26,11 @@ Added three new example files to the 10-functions directory: a Terraform functio
 
 Added proj02-iam-users, a new Terraform infrastructure-as-code project for managing AWS IAM users and roles. The project includes user provisioning from YAML configuration, automatic role creation with four predefined access levels (readonly, developer, admin, auditor), and policy attachment to AWS managed policies. Users receive auto-generated login profiles with initial passwords upon deployment to the eu-west-1 AWS region.
 
+## [88d5f78] - 2024-03-08
+### feat(11-multiple-resources): add files
+
+Added a new Terraform example module demonstrating provisioning of multiple AWS resources using `count` and `for_each` meta-arguments. The module includes VPC and subnet creation via map-based configuration, two different EC2 provisioning patterns (count from list and for_each from map), dynamic AMI data source lookups for Ubuntu and Nginx images, and comprehensive input validation for CIDR blocks, instance types, and AMI selections. This example helps users understand the differences between count and for_each iteration approaches in Terraform.
+
 ## [71e7123] - 2024-02-28
 
 ### feat(proj01): add project files
