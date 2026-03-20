@@ -34,23 +34,28 @@ This repository contains Terraform projects demonstrating OIDC (OpenID Connect) 
 
 ## Project 05: Terraform Cloud to AWS OIDC
 
-### Overview
+## Overview
 
-Terraform workspaces allow you to maintain separate state files for different environments (dev, int, staging, prod) while using the same Terraform configuration. This example shows how to deploy varying numbers of AWS S3 buckets per environment.
+The module showcases:
+
+- **VPC & Networking**: Creates a single VPC with multiple subnets configured via a map variable
+- **EC2 Instances via Count**: Provisions instances from a list configuration using the `count` meta-argument
+- **EC2 Instances via for_each**: Provisions instances from a map configuration using the `for_each` meta-argument
+- **AMI Data Sources**: Dynamically retrieves the latest Ubuntu 22.04 and Bitnami Nginx AMI IDs
+- **Input Validation**: Validates CIDR blocks, instance types, and supported AMI values
 
 ## Architecture
 
 ```mermaid
 graph TD
-    A[AWS Provider] --> B[VPC Data Source]
-    A --> C[Availability Zones Data Source]
-    B --> D[Subnets with AZ Distribution]
-    D --> E[High Availability Check]
-    A --> F[Ubuntu AMI Data Source]
-    F --> G[EC2 Instance]
-    G --> H[Instance Type Validation]
-    G --> I[Cost Center Tag Check]
-    J[Variables] --> G
+    A[VPC 10.0.0.0/16] --> B[Subnet Config Map]
+    B --> C[Subnets - for_each]
+    C --> D[EC2 Instances - count]
+    C --> E[EC2 Instances - for_each]
+    F[Ubuntu AMI Data] --> G[AMI Lookup]
+    H[Nginx AMI Data] --> G
+    G --> D
+    G --> E
 ```
 
 ### Files
@@ -126,15 +131,25 @@ The project imports three types of AWS resources:
 3. **Code Archiving**: The `archive_file` data source automatically zips the Lambda code
 4. **Outputs**: The Lambda Function URL is exported for easy access
 
-### Usage
+## Usage
+
+Initialize Terraform:
 
 ```bash
-terraform init  # Initialize and download providers
-terraform plan  # Preview resource changes
-terraform apply # Create resources in both regions
+terraform init
 ```
 
-This module serves as a reference for projects requiring multi-region AWS infrastructure or managing multiple AWS accounts through provider aliasing.
+Plan the deployment:
+
+```bash
+terraform plan
+```
+
+Apply the configuration:
+
+```bash
+terraform apply
+```
 
 ### Key Files Explained
 
@@ -349,11 +364,7 @@ terraform destroy  # Clean up resources
 
 This module demonstrates how to use Terraform data sources to dynamically query and retrieve information about existing AWS resources without managing them directly.
 
-### Key Concepts
-
-- **Provider Lock File** (`.terraform.lock.hcl`): Automatically maintained by `terraform init` to ensure consistent provider versions across team members and CI/CD pipelines.
-- **Version Constraints**: Uses semantic versioning (~> 5.0) to allow patch updates while preventing major version changes.
-- **Multi-Region Resources**: Demonstrates splitting resources across different AWS regions using provider aliases.
+## Key Concepts
 
 ### Contents
 
@@ -426,9 +437,7 @@ Ensures subnets are distributed across multiple AZs to prevent single-zone deplo
 
 ## Configuration
 
-### Variables
-
-- `instance_type` (string, default: "t2.micro"): The EC2 instance type to deploy. Must be one of the allowed types.
+## Variables
 
 ### Provider Configuration
 
@@ -650,10 +659,14 @@ graph TD
 
 This directory contains HCL (HashiCorp Configuration Language) examples demonstrating core Terraform constructs:
 
-### File Structure
+## File Structure
 
-- `hcl.tf`: Main example file showcasing HCL syntax and Terraform patterns
-- `module-example/`: Referenced module directory (to be created)
+- **provider.tf**: Terraform version and AWS provider configuration
+- **data.tf**: Local values including project name
+- **networking.tf**: VPC and subnet resources using `for_each`
+- **compute.tf**: EC2 instances using both `count` and `for_each` with AMI data sources
+- **variables.tf**: Input variable definitions with validation rules
+- **terraform.tfvars**: Example variable values
 
 ### Use Cases
 
@@ -673,3 +686,82 @@ This module demonstrates Terraform provider configuration best practices, includ
   - Aliased provider `aws.us-east` for `us-east-1`
 - **Provider Aliasing**: Shows how to use the `alias` parameter to manage resources across multiple regions or AWS accounts.
 - **Resources**: Creates example S3 buckets in both regions, demonstrating explicit provider assignment using the `provider` argument.
+
+# Terraform Multiple Resources Example
+
+This example demonstrates how to provision multiple AWS resources using Terraform's `count` and `for_each` meta-arguments.
+
+### subnet_config
+
+A map of subnet configurations. Each subnet requires:
+
+- `cidr_block` (string): Valid CIDR notation for the subnet
+
+**Validation**: All CIDR blocks must be valid (checked via `cidrnetmask` function)
+
+```hcl
+subnet_config = {
+  default = {
+    cidr_block = "10.0.0.0/24"
+  }
+  subnet_1 = {
+    cidr_block = "10.0.1.0/24"
+  }
+}
+```
+
+### ec2_instance_config_list
+
+A list of EC2 instance configurations (used with `count`). Each instance requires:
+
+- `instance_type` (string): AWS instance type (only t2.micro allowed)
+- `ami` (string): AMI selector – either "ubuntu" or "nginx"
+- `subnet_name` (string, optional): Name key from subnet_config map (defaults to "default")
+
+**Validation**:
+- Only `t2.micro` instance types are allowed
+- Only "ubuntu" and "nginx" AMI values are supported
+
+### ec2_instance_config_map
+
+A map of EC2 instance configurations (used with `for_each`). Each instance requires:
+
+- `instance_type` (string): AWS instance type (only t2.micro allowed)
+- `ami` (string): AMI selector – either "ubuntu" or "nginx"
+- `subnet_name` (string, optional): Name key from subnet_config map (defaults to "default")
+
+**Validation**:
+- Only `t2.micro` instance types are allowed
+- Only "ubuntu" and "nginx" AMI values are supported
+
+### for_each vs count
+
+This example demonstrates both iteration approaches:
+
+- **count**: Used for instances provisioned from a list. Good when you need numeric indexing.
+- **for_each**: Used for both subnets (from a map) and optionally for instances. Better for named resources and map-based configurations.
+
+### AMI Data Sources
+
+The module uses data sources to dynamically retrieve the latest AMIs:
+
+- **Ubuntu**: Canonical-provided Ubuntu 22.04 LTS (owner ID: 099720109477)
+- **Nginx**: Bitnami Nginx 1.25.4 on Debian 12
+
+AMI IDs are stored in a local map for easy reference by instances.
+
+### Input Validation
+
+Comprehensive validation ensures:
+
+- Only valid CIDR blocks are accepted
+- Only cost-effective t2.micro instances are provisioned
+- Only pre-approved AMI types (ubuntu, nginx) can be used
+
+This prevents configuration drift and accidental expensive resources.
+
+## Provider Requirements
+
+- Terraform >= 1.7
+- AWS Provider >= 5.0
+- Region: eu-west-1
