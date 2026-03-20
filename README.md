@@ -80,12 +80,12 @@ The project implements the following components:
 - `.terraform.lock.hcl` — Dependency lock file
   - Locks AWS provider v5.46.0 and TLS provider v4.0.5
 
-### Prerequisites
+## Prerequisites
 
-- Terraform >= 1.7
-- AWS CLI configured with appropriate credentials
-- An existing Lambda function and related resources in your AWS account (named `manually-created-lambda`)
-- AWS region: `eu-west-1`
+- Terraform 0.12 or higher installed
+- AWS account with appropriate permissions (IAM credentials)
+- AWS CLI configured with credentials or environment variables
+- Basic understanding of AWS networking concepts (VPC, subnets, etc.)
 
 ### Setup
 
@@ -184,3 +184,150 @@ Once imported, you can modify the Terraform configuration and run `terraform app
 - The import IDs must match existing resources in your AWS account
 - Once imported, these resources are managed by Terraform and changes should go through Terraform workflows
 - The Lambda code in `build/index.mjs` can be modified and redeployed by running `terraform apply`
+
+# Benefits IaC - VPC Deployment
+
+Terraform configuration for deploying AWS Virtual Private Cloud (VPC) infrastructure using Infrastructure-as-Code principles.
+
+## Tech Stack
+
+- **Terraform** - Infrastructure-as-Code tool for provisioning cloud resources
+- **AWS** - Cloud provider (VPC services)
+- **HCL** - HashiCorp Configuration Language
+
+## Installation and Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd benefits-iac
+   ```
+
+2. **Initialize Terraform working directory**
+   ```bash
+   terraform init
+   ```
+
+3. **Configure AWS credentials**
+   - Export AWS credentials as environment variables:
+     ```bash
+     export AWS_ACCESS_KEY_ID="your-access-key"
+     export AWS_SECRET_ACCESS_KEY="your-secret-key"
+     export AWS_DEFAULT_REGION="us-east-1"
+     ```
+   - Or configure via `~/.aws/credentials`
+
+4. **Review the execution plan**
+   ```bash
+   terraform plan
+   ```
+
+5. **Deploy the VPC infrastructure**
+   ```bash
+   terraform apply
+   ```
+
+## Usage Examples
+
+### Deploy VPC to specific region
+
+Modify `vpc.tf` or pass variables during apply:
+
+```bash
+terraform apply -var="aws_region=us-west-2"
+```
+
+### Destroy VPC infrastructure
+
+When no longer needed, clean up resources:
+
+```bash
+terraform destroy
+```
+
+### View current state
+
+```bash
+terraform show
+```
+
+## Architecture Overview
+
+The project structure is organized as follows:
+
+- **01-benefits-iac/** - Main directory containing IaC configurations
+  - **vpc.tf** - Terraform configuration file defining VPC resources, including VPC creation, subnet definitions, internet gateways, route tables, and security group configurations
+
+## File Descriptions
+
+### vpc.tf
+
+This is the primary Terraform configuration file that defines the VPC infrastructure. It contains resource definitions for:
+- VPC creation and configuration
+- Public and private subnets
+- Internet Gateway attachment
+- Route table associations
+- Network ACLs and security groups
+- NAT Gateway configuration (if applicable)
+
+## Key Features
+
+- **Infrastructure as Code** - Version-controlled cloud infrastructure definitions
+- **Modular Design** - Reusable Terraform configurations for VPC deployment
+- **AWS-native** - Leverages AWS managed services for networking
+- **Declarative Configuration** - Define desired state; Terraform handles implementation
+
+## Getting Started with Terraform
+
+For first-time users:
+
+1. Review the `vpc.tf` file to understand the infrastructure design
+2. Run `terraform fmt` to format code according to Terraform standards
+3. Use `terraform validate` to check configuration syntax
+4. Always review `terraform plan` output before applying changes
+5. Store `terraform.tfstate` securely (consider remote backends like S3)
+
+## Common Workflows
+
+### Initialize and deploy
+
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+### Update infrastructure
+
+```bash
+# Modify vpc.tf
+terraform plan  # Review changes
+terraform apply
+```
+
+### Clean up resources
+
+```bash
+terraform destroy
+```
+
+## Best Practices
+
+- Always review `terraform plan` output before applying
+- Use version control for all `.tf` files
+- Store sensitive credentials in environment variables or AWS Secrets Manager
+- Implement remote state management for team collaboration
+- Tag resources for cost tracking and organization
+
+## Troubleshooting
+
+- **Authentication errors** - Verify AWS credentials are configured correctly
+- **Resource conflicts** - Check if VPC or resources already exist in the region
+- **Permission denied** - Ensure IAM user has necessary permissions (ec2:*, vpc:*)
+- **State conflicts** - Clear local state with `terraform destroy` if needed
+
+## References
+
+- [Terraform AWS VPC Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc)
+- [AWS VPC Documentation](https://docs.aws.amazon.com/vpc/)
+- [Terraform Getting Started](https://www.terraform.io/intro/index.html)
