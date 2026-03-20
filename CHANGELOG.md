@@ -17,6 +17,11 @@ Added proj03-import-lambda, a new Terraform project demonstrating the resource i
 ### feat(15-object-validation): add files
 Added new Terraform example project demonstrating object validation patterns using postconditions and check blocks. Includes EC2 instance deployment with instance type validation, subnet creation with availability zone distribution checks, and resource compliance assertions. Implements best practices for infrastructure validation in Terraform 1.7+.
 
+## [c628a0f] - 2024-03-13
+### feat(12-public-modules): add files
+
+Added a new Terraform configuration example demonstrating the use of public modules from the Terraform Registry. This example implements a complete AWS infrastructure setup using the terraform-aws-modules/vpc and terraform-aws-modules/ec2-instance modules. The configuration includes provider setup for AWS in eu-west-1 region, a VPC with public and private subnets across availability zones, and a t2.micro EC2 instance running Ubuntu 22.04 LTS. This demonstrates best practices for leveraging certified public modules to reduce code duplication, improve maintainability, and ensure infrastructure follows community-validated patterns.
+
 ## [b738d1a] - 2024-03-13
 ### feat(10-functions): add files
 Added three new example files to the 10-functions directory: a Terraform functions example file demonstrating string manipulation (startswith, lower), mathematical operations (pow), and data transformation functions (yamldecode, jsonencode), along with supporting provider configuration and YAML data files. These are educational example files with no impact on the production codebase.
