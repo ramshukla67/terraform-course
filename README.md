@@ -36,13 +36,7 @@ This repository contains Terraform projects demonstrating OIDC (OpenID Connect) 
 
 ## Overview
 
-The module showcases:
-
-- **VPC & Networking**: Creates a single VPC with multiple subnets configured via a map variable
-- **EC2 Instances via Count**: Provisions instances from a list configuration using the `count` meta-argument
-- **EC2 Instances via for_each**: Provisions instances from a map configuration using the `for_each` meta-argument
-- **AMI Data Sources**: Dynamically retrieves the latest Ubuntu 22.04 and Bitnami Nginx AMI IDs
-- **Input Validation**: Validates CIDR blocks, instance types, and supported AMI values
+The `04-backends` module illustrates best practices for managing Terraform state files in a centralized, remote location rather than storing them locally. This is essential for team collaboration, state locking, and maintaining a single source of truth for infrastructure state.
 
 ## Architecture
 
@@ -58,10 +52,7 @@ graph TD
     G --> E
 ```
 
-### Files
-
-- `providers.tf`: Core provider and resource definitions
-- `.terraform.lock.hcl`: Provider version lock file (auto-generated)
+## Files
 
 ## Prerequisites
 
@@ -133,22 +124,16 @@ The project imports three types of AWS resources:
 
 ## Usage
 
-Initialize Terraform:
+To use this module with a specific backend configuration:
 
 ```bash
-terraform init
+terraform init -backend-config=dev.s3.tfbackend
 ```
 
-Plan the deployment:
+Or for production:
 
 ```bash
-terraform plan
-```
-
-Apply the configuration:
-
-```bash
-terraform apply
+terraform init -backend-config=prod.s3.tfbackend
 ```
 
 ### Key Files Explained
@@ -365,6 +350,13 @@ terraform destroy  # Clean up resources
 This module demonstrates how to use Terraform data sources to dynamically query and retrieve information about existing AWS resources without managing them directly.
 
 ## Key Concepts
+
+**Remote State Benefits:**
+- Centralized state management accessible by multiple team members
+- State locking to prevent concurrent modifications
+- Secure storage in AWS S3 with encryption options
+- State versioning and audit trail capabilities
+- Separation of concerns between development and production environments
 
 ### Contents
 
@@ -765,3 +757,48 @@ This prevents configuration drift and accidental expensive resources.
 - Terraform >= 1.7
 - AWS Provider >= 5.0
 - Region: eu-west-1
+
+# Terraform Backends Module
+
+This module demonstrates Terraform remote state management using AWS S3 as a backend storage solution.
+
+### `providers.tf`
+
+Configures Terraform requirements and AWS provider:
+- Requires Terraform >= 1.7.0
+- Specifies AWS provider version ~> 5.0 and random provider ~> 3.0
+- Defines S3 backend configuration for remote state storage
+- Sets default AWS region to eu-west-1
+
+### `s3.tf`
+
+Defines the S3 bucket resource:
+- Creates an S3 bucket with a randomly generated suffix to ensure global uniqueness
+- Uses the `random_id` resource to generate a 6-byte hex suffix
+- Outputs the created bucket name for reference
+
+### Backend Configuration Files
+
+#### `dev.s3.tfbackend`
+Backend configuration for the development environment (for illustration purposes):
+```hcl
+bucket = "terraform-course-lauromueller-remote-backend"
+key    = "04-backends/dev/state.tfstate"
+region = "eu-west-1"
+```
+
+#### `prod.s3.tfbackend`
+Backend configuration for the production environment (for illustration purposes):
+```hcl
+bucket = "terraform-course-lauromueller-remote-backend"
+key    = "04-backends/prod/state.tfstate"
+region = "eu-west-1"
+```
+
+### `.terraform.lock.hcl`
+
+Lock file containing pinned versions of dependencies:
+- AWS Provider: 5.37.0
+- Random Provider: 3.6.0
+
+This file ensures consistent provider versions across team members and CI/CD environments.
