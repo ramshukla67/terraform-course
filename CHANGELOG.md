@@ -4,6 +4,10 @@
 docs: auto-update documentation (b44587c)
 Creation of CHANGELOG.md file documenting a previous documentation content update (adding a promotional course link). This is a meta-documentation commit that records a content change rather than introducing new features or technical changes.
 
+## [329aca9] - 2024-12-22
+### Update README.md
+Added a single course link (The Definitive Helm Course) to the existing course list in README.md. This is a minor content update with no impact on project functionality, code architecture, or system behavior.
+
 ## [cd80f7a] - 2024-04-21
 ### feat(proj05-tf-cloud-oidc): add files
 
@@ -22,6 +26,15 @@ Added proj03-import-lambda, a new Terraform project demonstrating the resource i
 ## [67c6bc5] - 2024-03-20
 ### feat(15-object-validation): add files
 Added new Terraform example project demonstrating object validation patterns using postconditions and check blocks. Includes EC2 instance deployment with instance type validation, subnet creation with availability zone distribution checks, and resource compliance assertions. Implements best practices for infrastructure validation in Terraform 1.7+.
+
+## [456abd7] - 2024-03-17
+### refactor: standardize Terraform required versions
+Standardized Terraform required_version constraints across seven project directories to use the consistent "~> 1.7" version specification, replacing various previously inconsistent version constraints (">= 1.7.0", "~> 1.0", ">= 1.7.0, < 2.0.0", and "~> 1.7.0"). This is a configuration standardization that does not alter functionality or user-facing behavior.
+
+## [e09f917] - 2024-03-16
+### feat(13-local-modules): add files
+
+Added a complete Terraform project demonstrating local module usage and reusability. This includes a fully-functional networking module that manages VPC creation, subnet configuration (public and private), Internet Gateway deployment, and route table management. The module validates CIDR blocks and availability zones, outputs subnet information indexed by configuration key, and automatically handles infrastructure decisions based on subnet types. The root project instantiates this module with example configurations and deploys an EC2 instance in a private subnet for demonstration purposes.
 
 ## [c628a0f] - 2024-03-13
 ### feat(12-public-modules): add files
