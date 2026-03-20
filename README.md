@@ -1080,3 +1080,38 @@ The AWS credentials must have permissions to:
 ## License
 
 MIT License - See LICENSE file for details
+
+## State Manipulation Examples
+
+This directory contains examples demonstrating various Terraform state manipulation techniques:
+
+### Import (`import.tf`)
+
+Demonstrates how to import existing AWS resources into Terraform state using the `import` block. The example imports an S3 bucket public access block configuration into state.
+
+**Key concepts:**
+- Using the `import` block to declare resources that should be imported
+- Referencing the ID of existing AWS resources
+- Managing resources that were created outside of Terraform
+
+### Remove (`remove.tf`)
+
+Demonstrates how to remove resources from Terraform state without destroying the actual infrastructure using the `removed` block.
+
+**Key concepts:**
+- Using the `removed` block to unmanage resources
+- Setting `destroy = false` to prevent actual resource deletion
+- Useful for resources that will be managed elsewhere or decommissioned separately
+
+### Taint (`taint.tf`)
+
+Contains example resources that can be marked as tainted to force Terraform to destroy and recreate them on the next apply.
+
+**Key concepts:**
+- Resources marked as tainted will be replaced during the next `terraform apply`
+- Useful for forcing recreation of resources that may have drifted or need updates
+- Can be tainted via CLI: `terraform taint <resource_address>`
+
+### Module Structure
+
+The `modules/compute/` directory contains reusable compute infrastructure patterns with proper variable typing and documentation.
