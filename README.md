@@ -802,3 +802,63 @@ Lock file containing pinned versions of dependencies:
 - Random Provider: 3.6.0
 
 This file ensures consistent provider versions across team members and CI/CD environments.
+
+# Terraform Learning Modules
+
+A comprehensive collection of Terraform examples demonstrating core HCL concepts and expressions.
+
+### 09-expressions
+
+Demonstrates HCL expressions and data transformation techniques in Terraform.
+
+**Contents:**
+
+- **operators.tf** - Basic mathematical, equality, comparison, and logical operators
+  - Math operators: `*`, `/`, `+`, `-` (and unary negation)
+  - Equality operators: `==`, `!=`
+  - Comparison operators: `<`, `<=`, `>`, `>=`
+  - Logical operators: `||` (OR), `&&` (AND), `!` (NOT)
+
+- **for-lists.tf** - For-loops for list transformation
+  - Creating derived lists through transformation (e.g., doubling numbers)
+  - Filtering lists with conditional logic
+  - Extracting attributes from list of objects
+  - String interpolation within for-loops
+
+- **for-maps.tf** - For-loops for map transformation
+  - Creating derived maps by transforming values
+  - Filtering maps based on value conditions
+  - Maintaining or transforming keys during iteration
+
+- **splat.tf** - Splat syntax for concise attribute extraction
+  - Using `[*]` notation to extract attributes from lists of objects
+  - Combining splat syntax with value extraction functions
+  - Alternative to for-loops for simple attribute collection
+
+- **lists-maps.tf** - Complex transformations combining lists and maps
+  - Converting list of objects to map with custom keys
+  - Handling complex nested data structures
+  - Extracting and transforming data across multiple iterations
+  - Grouping values by key (splat operator with `...`)
+
+- **variables.tf** - Variable definitions
+  - List of numbers
+  - Map of numbers
+  - List of objects with firstname/lastname
+  - List of user objects with username/role
+  - String variable for filtering
+
+- **terraform.tfvars** - Sample input values for demonstration
+
+- **provider.tf** - Terraform version requirement (>= 1.7)
+
+## Running the Example
+
+```bash
+cd 09-expressions
+terraform init
+terraform plan
+terraform apply
+```
+
+All outputs will be displayed showing the results of various expression transformations.
