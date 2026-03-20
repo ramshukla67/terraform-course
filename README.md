@@ -67,3 +67,73 @@ Build a reusable, production-grade RDS module for Terraform. This project emphas
 **File:** `projects/proj05-tf-cloud-oidc.md`
 
 Set up OpenID Connect (OIDC) authentication between Terraform Cloud and AWS for secure, keyless authentication. This project covers identity providers, role trust relationships, and multi-workspace configurations.
+
+# Terraform Cloud Configuration
+
+This directory contains example Terraform configurations for deploying infrastructure using Terraform Cloud.
+
+## Overview
+
+The 18-terraform-cloud example demonstrates how to:
+- Configure Terraform to use Terraform Cloud as the remote backend
+- Manage AWS infrastructure through Terraform Cloud
+- Use variable validation to enforce constraints
+- Deploy EC2 instances, S3 buckets, and generate random identifiers
+
+## Files
+
+- **provider.tf**: Terraform Cloud configuration and provider requirements
+  - Configures Terraform Cloud with LauroMueller organization
+  - Sets up AWS and Random providers
+  - AWS region: eu-west-1
+
+- **compute.tf**: EC2 instance configuration
+  - Uses latest Ubuntu 22.04 LTS AMI
+  - Instance type configurable via `ec2_instance_type` variable
+  - Tagged with "terraform-cloud" name
+
+- **s3.tf**: S3 bucket configuration
+  - Bucket name includes random suffix for global uniqueness
+  - Tagged with CreatedBy metadata
+
+- **random.tf**: Random resource generation
+  - Generates a 4-byte random ID in hexadecimal format
+  - Outputs the random ID for reference
+
+- **variables.tf**: Input variable definitions
+  - `ec2_instance_type`: EC2 instance type (validates t2.micro for free tier)
+
+- **.terraform.lock.hcl**: Dependency lock file
+  - Locks AWS provider v5.42.0
+  - Locks Random provider v3.6.0
+
+## Prerequisites
+
+- Terraform CLI installed
+- Terraform Cloud account and organization setup
+- AWS credentials configured (via environment variables or AWS CLI profile)
+- Authentication token for Terraform Cloud
+
+## Usage
+
+1. Initialize Terraform:
+   ```bash
+   terraform init
+   ```
+
+2. Plan the infrastructure:
+   ```bash
+   terraform plan -var="ec2_instance_type=t2.micro"
+   ```
+
+3. Apply the configuration:
+   ```bash
+   terraform apply -var="ec2_instance_type=t2.micro"
+   ```
+
+## Notes
+
+- This example uses the free tier eligible `t2.micro` instance type
+- S3 bucket names must be globally unique; the random suffix ensures uniqueness
+- Terraform Cloud state is managed remotely in the LauroMueller organization
+- The workspace name is "terraform-cli"
