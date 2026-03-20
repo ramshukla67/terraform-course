@@ -27,3 +27,15 @@ Happy learning! 🚀
 **Other courses I published in Udemy:**
 * Mastering GitHub Actions: From Beginner to Expert - https://www.lauromueller.com/courses/mastering-github-actions
 * Write Clean Code: 20 Code Smells and How to Get Rid of Them - https://lauromueller.com/courses/writing-clean-code/
+
+## Terraform Configuration
+
+The `01-benefits-iac` module contains Infrastructure as Code (IaC) resources for AWS using Terraform.
+
+### VPC Configuration
+
+The VPC resource is configured with:
+- **CIDR Block**: `10.0.0.0/16`
+- **Name Tag**: `Terraform VPC` (for easy identification in AWS console)
+
+All infrastructure resources include appropriate tags for resource management and cost tracking.
