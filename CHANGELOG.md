@@ -32,6 +32,11 @@ Added proj02-iam-users, a new Terraform infrastructure-as-code project for manag
 
 Added the first Terraform project: a static website hosting solution on AWS S3. The project includes complete Terraform configuration files for provisioning an S3 bucket with public read access, website configuration for serving HTML files, and automatic file uploads. This demonstrates fundamental Terraform patterns including resource creation, policy management, and output definition for AWS infrastructure.
 
+## [f307e1d] - 2024-02-25
+### feat(05-providers): add resources
+
+Added 05-providers module demonstrating Terraform provider configuration best practices. Includes AWS provider setup with version constraints (~> 5.0 for AWS, ~> 1.0 for Terraform), a lock file for version pinning, and example resources showing multi-region setup using provider aliasing. Two S3 buckets are created in eu-west-1 and us-east-1 to demonstrate explicit provider assignment and region-specific resource management.
+
 ## [e57dd02] - 2024-02-25
 ### feat(06-resources): add files
 
