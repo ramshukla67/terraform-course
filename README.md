@@ -36,30 +36,23 @@ This repository contains Terraform projects demonstrating OIDC (OpenID Connect) 
 
 ## Overview
 
-The `04-backends` module illustrates best practices for managing Terraform state files in a centralized, remote location rather than storing them locally. This is essential for team collaboration, state locking, and maintaining a single source of truth for infrastructure state.
+This example shows how to leverage certified public modules from the Terraform AWS Modules project to build a complete, production-ready infrastructure setup with minimal code duplication and best practices built-in.
 
 ## Architecture
 
-```mermaid
-graph TD
-    A[VPC 10.0.0.0/16] --> B[Subnet Config Map]
-    B --> C[Subnets - for_each]
-    C --> D[EC2 Instances - count]
-    C --> E[EC2 Instances - for_each]
-    F[Ubuntu AMI Data] --> G[AMI Lookup]
-    H[Nginx AMI Data] --> G
-    G --> D
-    G --> E
-```
+The configuration deploys the following AWS resources:
+
+- **VPC (Virtual Private Cloud)**: Configured with public and private subnets across multiple availability zones
+- **EC2 Instance**: An Ubuntu 22.04 t2.micro instance deployed in a public subnet
+- **Security Groups**: Default security group for the VPC managing ingress/egress rules
 
 ## Files
 
-## Prerequisites
+### Prerequisites
 
-- Terraform 0.12 or higher installed
-- AWS account with appropriate permissions (IAM credentials)
-- AWS CLI configured with credentials or environment variables
-- Basic understanding of AWS networking concepts (VPC, subnets, etc.)
+- Terraform >= 1.7
+- AWS CLI configured with appropriate credentials
+- Access to eu-west-1 region
 
 ### Setup
 
@@ -124,18 +117,6 @@ The project imports three types of AWS resources:
 
 ## Usage
 
-To use this module with a specific backend configuration:
-
-```bash
-terraform init -backend-config=dev.s3.tfbackend
-```
-
-Or for production:
-
-```bash
-terraform init -backend-config=prod.s3.tfbackend
-```
-
 ### Key Files Explained
 
 **provider.tf**: Configures AWS provider for `eu-west-1` region with Terraform version constraints (1.7+) and required providers (AWS 5.0+, Archive 2.0+).
@@ -150,11 +131,11 @@ terraform init -backend-config=prod.s3.tfbackend
 
 **outputs.tf**: Exports the Lambda Function URL for convenient access to the deployed function.
 
-### Notes
+## Notes
 
-- The import IDs must match existing resources in your AWS account
-- Once imported, these resources are managed by Terraform and changes should go through Terraform workflows
-- The Lambda code in `build/index.mjs` can be modified and redeployed by running `terraform apply`
+- The `.terraform.lock.hcl` file ensures reproducible builds by locking provider versions
+- All resources are tagged with the project name for easy identification and billing
+- The t2.micro instance type is suitable for testing and development; use larger instances for production workloads
 
 # Benefits IaC - VPC Deployment
 
@@ -582,15 +563,13 @@ Each environment is defined with a separate `.tfvars` file:
 - **staging.tfvars** - Staging environment: deploys 2 S3 buckets
 - **prod.tfvars** - Production environment: deploys 3 S3 buckets
 
-### Key Concepts Demonstrated
+## Key Concepts Demonstrated
 
-- **Terraform Configuration**: Provider declaration and version constraints
-- **Resources**: Creating and managing infrastructure (`aws_s3_bucket`)
-- **Data Sources**: Referencing externally-managed resources (`data "aws_s3_bucket"`)
-- **Variables**: Input variables with type, description, and default values
-- **Outputs**: Exposing resource attributes for consumption
-- **Locals**: Internal variable definitions for re-use within the configuration
-- **Modules**: Including and composing sub-configurations
+- **Module Reusability**: Using public modules reduces code duplication and leverages community best practices
+- **Terraform Registry**: How to source and version modules from the official Terraform Registry
+- **Locals and Data Sources**: Organizing configuration with local values and querying AWS for dynamic data (e.g., availability zones, AMI)
+- **Resource Tagging**: Applying consistent tags across all resources for organization and cost tracking
+- **Provider Pinning**: Using version constraints to ensure reproducible infrastructure
 
 # Terraform Projects
 
@@ -862,3 +841,107 @@ terraform apply
 ```
 
 All outputs will be displayed showing the results of various expression transformations.
+
+# 12-public-modules
+
+This directory contains a Terraform configuration example demonstrating the use of public modules from the Terraform Registry to provision AWS infrastructure.
+
+## Directory Structure
+
+```
+12-public-modules/
+├── provider.tf          # Terraform version and AWS provider configuration
+├── shared-data.tf       # Shared locals (project name, common tags)
+├── networking.tf        # VPC module configuration with subnets
+├── compute.tf           # EC2 instance module configuration
+└── .terraform.lock.hcl  # Terraform dependency lock file
+```
+
+## Configuration Files
+
+### provider.tf
+
+Defines Terraform and AWS provider requirements:
+- Terraform version: ~> 1.7
+- AWS provider version: ~> 5.0 (locked at 5.40.0 in the lock file)
+- AWS region: eu-west-1
+
+### shared-data.tf
+
+Contains shared local values used across all modules:
+- `project_name`: "12-public-modules"
+- `common_tags`: Standard tags applied to all resources for tracking and management
+
+### networking.tf
+
+Configures VPC infrastructure using the official terraform-aws-modules/vpc module (v5.5.3):
+- **VPC CIDR**: 10.0.0.0/16
+- **Public Subnets**: 10.0.128.0/24
+- **Private Subnets**: 10.0.0.0/24
+- Automatically discovers available AWS availability zones in the region
+
+### compute.tf
+
+Configures EC2 instances using the official terraform-aws-modules/ec2-instance module (v5.6.1):
+- **Instance Type**: t2.micro (eligible for AWS free tier)
+- **AMI**: Latest Ubuntu 22.04 LTS image from Canonical
+- **Placement**: Public subnet of the VPC
+- **Security**: Default VPC security group
+
+## Public Modules Used
+
+This configuration leverages certified public modules from the Terraform Registry:
+
+1. **[terraform-aws-modules/vpc/aws](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws)** v5.5.3
+   - Provides a fully-featured VPC with best practices
+   - Handles subnets, route tables, and internet gateways
+   - Integrates with availability zones for high availability
+
+2. **[terraform-aws-modules/ec2-instance/aws](https://registry.terraform.io/modules/terraform-aws-modules/ec2-instance/aws)** v5.6.1
+   - Simplifies EC2 instance creation
+   - Handles instance tagging and naming conventions
+   - Integrates with VPC for network configuration
+
+### Initialize Terraform
+
+```bash
+terraform init
+```
+
+This downloads the required modules and providers specified in the configuration.
+
+### Plan Infrastructure
+
+```bash
+terraform plan
+```
+
+Review the planned changes before applying.
+
+### Apply Configuration
+
+```bash
+terraform apply
+```
+
+Provisions the VPC, subnets, and EC2 instance.
+
+### Destroy Infrastructure
+
+```bash
+terraform destroy
+```
+
+Removes all provisioned resources.
+
+## Outputs
+
+No outputs are currently defined. You can add outputs for instance IDs, VPC details, or subnet information by creating an `outputs.tf` file.
+
+## Benefits of Using Public Modules
+
+- **Reduced Complexity**: Focus on business logic rather than infrastructure details
+- **Best Practices**: Modules are maintained by community experts and AWS
+- **Consistency**: Ensures resources are created with recommended configurations
+- **Maintainability**: Updates to modules can be applied across your infrastructure
+- **Community Support**: Well-documented with examples and active maintenance
