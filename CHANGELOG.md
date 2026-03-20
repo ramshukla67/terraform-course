@@ -47,6 +47,10 @@ Added 05-providers module demonstrating Terraform provider configuration best pr
 
 Added the 06-resources Terraform module, a complete example of AWS infrastructure provisioning. This module demonstrates VPC creation with public subnets, internet gateway setup, routing configuration, and EC2 instance deployment with security groups. The infrastructure deploys a t2.micro EC2 instance running NGINX accessible via HTTP/HTTPS, serving as a practical learning example for AWS networking and compute resources using Terraform.
 
+## [8a973e5] - 2024-02-19
+### feat(03-first-tf-project): add resources
+Initialized the first Terraform project with core infrastructure configuration. Added provider setup for AWS (eu-west-1 region) and Random provider with version constraints. Implemented an example S3 bucket resource with automatic unique naming via random ID suffix. Included .terraform.lock.hcl for dependency reproducibility across environments.
+
 ## [6ce248f] - 2024-02-18
 ### feat(02-hcl): add examples of HCL constructs
 Added a new HCL example file demonstrating core Terraform constructs including resource definitions for S3 buckets, data sources for external resource references, input variables with defaults, outputs, locals, and module composition. This serves as a practical reference guide for HCL syntax patterns.
