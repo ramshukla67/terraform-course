@@ -26,4 +26,3 @@ Happy learning! 🚀
 
 **Other courses I published in Udemy:**
 * Mastering GitHub Actions: From Beginner to Expert - https://www.lauromueller.com/courses/mastering-github-actions
-* Write Clean Code: 20 Code Smells and How to Get Rid of Them - https://lauromueller.com/courses/writing-clean-code/
