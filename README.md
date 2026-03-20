@@ -55,10 +55,8 @@ graph TD
 
 ### Files
 
-- **provider.tf** - Terraform version requirements and AWS/random provider configuration (region: eu-west-1)
-- **variables.tf** - Input variable definition for `bucket_count` (number type)
-- **s3.tf** - S3 bucket resource using `count` to deploy multiple buckets per workspace. Bucket names include the workspace name for easy identification
-- **.terraform.lock.hcl** - Provider dependency lock file (AWS ~5.0, random ~3.0)
+- `providers.tf`: Core provider and resource definitions
+- `.terraform.lock.hcl`: Provider version lock file (auto-generated)
 
 ## Prerequisites
 
@@ -131,23 +129,12 @@ The project imports three types of AWS resources:
 ### Usage
 
 ```bash
-# Initialize Terraform
-terraform init
-
-# Create and switch to a workspace
-terraform workspace new dev
-terraform workspace select dev
-
-# Apply configuration with environment-specific variables
-terraform apply -var-file="dev.tfvars"
-
-# Switch to another environment
-terraform workspace select prod
-terraform apply -var-file="prod.tfvars"
-
-# List all workspaces
-terraform workspace list
+terraform init  # Initialize and download providers
+terraform plan  # Preview resource changes
+terraform apply # Create resources in both regions
 ```
+
+This module serves as a reference for projects requiring multi-region AWS infrastructure or managing multiple AWS accounts through provider aliasing.
 
 ### Key Files Explained
 
@@ -364,10 +351,9 @@ This module demonstrates how to use Terraform data sources to dynamically query 
 
 ### Key Concepts
 
-- **Module Source**: External modules are referenced using the format `<namespace>/<name>/<provider>` from the Terraform Registry
-- **Versioning**: Specifying a version ensures reproducible deployments
-- **Input Variables**: Modules expose configurable inputs (vpc_config, subnet_config) allowing customization without modifying the module source
-- **Lock File**: The `.terraform.lock.hcl` file should be committed to version control to ensure all team members and CI/CD systems use the same provider versions
+- **Provider Lock File** (`.terraform.lock.hcl`): Automatically maintained by `terraform init` to ensure consistent provider versions across team members and CI/CD pipelines.
+- **Version Constraints**: Uses semantic versioning (~> 5.0) to allow patch updates while preventing major version changes.
+- **Multi-Region Resources**: Demonstrates splitting resources across different AWS regions using provider aliases.
 
 ### Contents
 
@@ -676,3 +662,14 @@ These examples are useful for:
 - Understanding Terraform resource and data source management
 - Seeing patterns for variable and output organization
 - Referencing module composition patterns
+
+## Module: 05-providers
+
+This module demonstrates Terraform provider configuration best practices, including:
+
+- **Provider Declaration**: Configures the AWS provider with version constraints (~> 5.0) and Terraform version constraints (~> 1.0).
+- **Multi-Region Setup**: Establishes two AWS provider instances:
+  - Default provider for `eu-west-1`
+  - Aliased provider `aws.us-east` for `us-east-1`
+- **Provider Aliasing**: Shows how to use the `alias` parameter to manage resources across multiple regions or AWS accounts.
+- **Resources**: Creates example S3 buckets in both regions, demonstrating explicit provider assignment using the `provider` argument.
