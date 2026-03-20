@@ -16,6 +16,11 @@ Added new Terraform example project demonstrating object validation patterns usi
 ### feat(10-functions): add files
 Added three new example files to the 10-functions directory: a Terraform functions example file demonstrating string manipulation (startswith, lower), mathematical operations (pow), and data transformation functions (yamldecode, jsonencode), along with supporting provider configuration and YAML data files. These are educational example files with no impact on the production codebase.
 
+## [8133ed1] - 2024-03-11
+### feat(proj02): add files
+
+Added proj02-iam-users, a new Terraform infrastructure-as-code project for managing AWS IAM users and roles. The project includes user provisioning from YAML configuration, automatic role creation with four predefined access levels (readonly, developer, admin, auditor), and policy attachment to AWS managed policies. Users receive auto-generated login profiles with initial passwords upon deployment to the eu-west-1 AWS region.
+
 ## [e57dd02] - 2024-02-25
 ### feat(06-resources): add files
 
