@@ -36,7 +36,10 @@ This repository contains Terraform projects demonstrating OIDC (OpenID Connect) 
 
 ### Overview
 
-The `proj05-tf-cloud-oidc` project establishes a secure, keyless authentication mechanism between Terraform Cloud and AWS using OpenID Connect. This eliminates the need for static AWS credentials in Terraform Cloud.
+**proj03-import-lambda** is a Terraform configuration that shows how to use Terraform's `import` block to adopt existing AWS resources that were created outside of Terraform. This is useful for:
+- Bringing legacy infrastructure under Terraform management
+- Migrating existing resources into Terraform without recreating them
+- Building Terraform configurations from currently deployed infrastructure
 
 ### Architecture
 
@@ -80,9 +83,9 @@ The project implements the following components:
 ### Prerequisites
 
 - Terraform >= 1.7
-- AWS account with appropriate permissions
-- Terraform Cloud account with organization "LauroMueller"
-- Existing Terraform Cloud workspaces: terraform-cli and terraform-cli2
+- AWS CLI configured with appropriate credentials
+- An existing Lambda function and related resources in your AWS account (named `manually-created-lambda`)
+- AWS region: `eu-west-1`
 
 ### Setup
 
@@ -97,3 +100,87 @@ The project implements the following components:
 - The `terraform-cloud-automation-admin` role has full AWS administrative access; restrict as needed
 - OIDC conditions validate both the audience and workspace subject claims
 - Supported workspaces are strictly defined in the assume role policy
+
+## proj03-import-lambda
+
+This project demonstrates Terraform's resource import functionality by importing a manually-created AWS Lambda function and its associated infrastructure into Terraform management.
+
+### What Gets Imported
+
+The project imports three types of AWS resources:
+
+1. **Lambda Function** (`aws_lambda_function.this`)
+   - Function name: `manually-created-lambda`
+   - Runtime: Node.js 18.x
+   - Handler: `index.handler`
+   - Includes Function URL for public HTTP access (no authorization required)
+   - CloudWatch logging enabled
+
+2. **IAM Role** (`aws_iam_role.lambda_execution_role`)
+   - Role name: `manually-created-lambda-role-apq5o1ty`
+   - Service: Lambda execution
+   - Trust relationship: Allows Lambda service to assume the role
+
+3. **IAM Policy & Attachment** (`aws_iam_policy.lambda_execution`)
+   - Provides CloudWatch Logs permissions
+   - Allows creating log groups, streams, and writing log events
+   - Scoped to the Lambda's specific log group
+
+4. **CloudWatch Log Group** (`aws_cloudwatch_log_group.lambda`)
+   - Log group: `/aws/lambda/manually-created-lambda`
+   - Used for storing Lambda execution logs
+
+### Project Structure
+
+```
+proj03-import-lambda/
+├── provider.tf              # AWS provider configuration with required versions
+├── iam.tf                   # IAM role and policy imports & definitions
+├── lambda.tf                # Lambda function, URL, and code archive
+├── cloudwatch.tf            # CloudWatch log group import
+├── outputs.tf               # Output: Lambda function URL
+├── build/
+│   └── index.mjs            # Lambda handler function (Node.js 18.x)
+├── .terraform.lock.hcl      # Terraform provider lock file
+└── lambda.zip               # Generated zip archive of Lambda code
+```
+
+### How It Works
+
+1. **Import Blocks**: Each file begins with `import` blocks that reference existing AWS resources by their IDs
+2. **Data Sources**: Policy documents are generated using `data.aws_iam_policy_document` to ensure consistency
+3. **Code Archiving**: The `archive_file` data source automatically zips the Lambda code
+4. **Outputs**: The Lambda Function URL is exported for easy access
+
+### Usage
+
+To import these resources into your Terraform state:
+
+```bash
+cd proj03-import-lambda
+terraform init
+terraform plan   # Review the imported resources
+terraform apply  # Bring resources under Terraform management
+```
+
+Once imported, you can modify the Terraform configuration and run `terraform apply` to manage these resources like any other Terraform-created resource.
+
+### Key Files Explained
+
+**provider.tf**: Configures AWS provider for `eu-west-1` region with Terraform version constraints (1.7+) and required providers (AWS 5.0+, Archive 2.0+).
+
+**iam.tf**: Defines IAM role, policy, and their relationship. Includes `import` blocks to adopt existing role and policy into Terraform state.
+
+**lambda.tf**: Contains the Lambda function definition, Function URL configuration, and code archiving logic. The `import` block references the existing Lambda function by name.
+
+**cloudwatch.tf**: Creates or imports the CloudWatch log group where Lambda logs are stored.
+
+**build/index.mjs**: Simple Node.js 18.x handler that returns a welcome message.
+
+**outputs.tf**: Exports the Lambda Function URL for convenient access to the deployed function.
+
+### Notes
+
+- The import IDs must match existing resources in your AWS account
+- Once imported, these resources are managed by Terraform and changes should go through Terraform workflows
+- The Lambda code in `build/index.mjs` can be modified and redeployed by running `terraform apply`
