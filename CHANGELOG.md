@@ -1,0 +1,3 @@
+## [c4c620f] - 2024-12-23
+### feat(proj02): add sensitive flag to passwords output
+Added `sensitive = true` flag to the `passwords` output in the IAM users module to prevent sensitive password data from being displayed in Terraform logs, state output, and console output. This improves security by ensuring credentials are never accidentally exposed during plan or apply operations. Also upgraded AWS provider from 5.40.0 to 5.82.2.
