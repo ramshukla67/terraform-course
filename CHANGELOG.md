@@ -1,3 +1,9 @@
+
+## [56b033e] - 2024-03-29
+### feat(18-terraform-cloud): add files
+
+Added a new Terraform Cloud example project demonstrating Infrastructure as Code deployment to AWS. This includes comprehensive Terraform configuration for managing EC2 instances, S3 buckets, and random identifiers through Terraform Cloud. The example shows best practices for remote state management, provider configuration with version constraints, and input variable validation to enforce free-tier eligibility. AWS region is set to eu-west-1 with support for the LauroMueller Terraform Cloud organization.
+
 ## [329aca9] - 2024-12-22
 ### Update README.md
 Added a single course link (The Definitive Helm Course) to the existing course list in README.md. This is a minor content update with no impact on project functionality, code architecture, or system behavior.
@@ -14,4 +20,3 @@ Added a complete Terraform project demonstrating local module usage and reusabil
 ## [b44587c] - 2024-10-31
 ### Update README.md
 Added a promotional link to "The Complete Docker and Kubernetes Course" in the README's course listing section. This is a content update to reference material with no impact on the project's functionality, features, or technical documentation.
-
