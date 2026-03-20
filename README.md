@@ -2,13 +2,6 @@
 
 ### Course link (with a big discount 🙂): https://www.lauromueller.com/courses/mastering-terraform
 
-**Check my other courses:** 
-
-- 👉 The Complete Docker and Kubernetes Course: From Zero to Hero - https://www.lauromueller.com/courses/docker-kubernetes
-- 👉 The Definitive Helm Course: From Beginner to Master - https://www.lauromueller.com/courses/definitive-helm-course
-- 👉 Mastering GitHub Actions: From Beginner to Expert - https://www.lauromueller.com/courses/mastering-github-actions
-- 👉 Write better code: 20 code smells and how to get rid of them -  https://www.lauromueller.com/courses/writing-clean-code
-
 Welcome everyone! I'm very happy to see you around, and I hope this repository brings lots of value for those learning more about Terraform. Make sure to check the link above for a great discourse on the course in Udemy, where I not only provide theoretical explanations around all the concepts here, but also go in details through the entire coding of the examples in this repository.
 
 Here are a few tips for you to best navigate the contents of this repository:
@@ -21,8 +14,8 @@ Happy learning! 🚀
 ## Additional Links and Courses:
 
 **Other repositories included in the course:**
-* Networking Module Repository - https://github.com/lm-academy/terraform-aws-networking-tf-course
-* Terraform Cloud VCS Integration Repository - https://github.com/lm-academy/terraform-course-example-terraform-cloud
+* Networking Module Repository - https://github.com/udemy-lauromueller/terraform-aws-networking-tf-course
+* Terraform Cloud VCS Integration Repository - https://github.com/udemy-lauromueller/terraform-course-example-terraform-cloud
 
 **Other courses I published in Udemy:**
 * Mastering GitHub Actions: From Beginner to Expert - https://www.lauromueller.com/courses/mastering-github-actions
