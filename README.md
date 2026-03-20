@@ -100,12 +100,22 @@ The project imports three types of AWS resources:
 ## Project Structure
 
 ```
-15-object-validation/
-├── provider.tf          # Terraform version and AWS provider configuration
-├── variables.tf         # Input variables for instance type
-├── compute.tf           # EC2 instance with validation rules
-├── networking.tf        # VPC networking with AZ distribution validation
-└── .terraform.lock.hcl  # Terraform provider lock file
+13-local-modules/
+├── modules/
+│   └── networking/          # Reusable VPC and Subnet module
+│       ├── vpc.tf           # Core VPC, subnet, IGW, and routing resources
+│       ├── variables.tf     # Input variables with validation
+│       ├── outputs.tf       # Module outputs (VPC ID, subnet info)
+│       ├── providers.tf     # Provider configuration
+│       ├── README.md        # Module documentation
+│       ├── LICENSE          # MIT License
+│       └── examples/
+│           └── complete/    # Complete usage example
+├── networking.tf            # Module instantiation
+├── compute.tf               # EC2 instance in private subnet
+├── outputs.tf               # Root outputs
+├── providers.tf             # AWS provider configuration
+└── .terraform.lock.hcl      # Dependency lock file
 ```
 
 ### How It Works
@@ -437,9 +447,9 @@ To test the validation rules:
 
 ## Requirements
 
-- Terraform >= 1.7.0
+- Terraform >= 1.0
 - AWS Provider >= 5.0
-- AWS account with appropriate permissions to create EC2 instances, subnets, and VPCs
+- AWS credentials configured with appropriate permissions
 
 ## Example 14: Using External Terraform Modules
 
@@ -617,13 +627,25 @@ terraform apply
 
 ```mermaid
 graph TD
-    A[Terraform Configuration] --> B[AWS Provider]
-    B --> C[S3 Bucket]
-    C --> D[Public Access Policy]
-    C --> E[Website Configuration]
-    C --> F[index.html]
-    C --> G[error.html]
-    E --> H[Website Endpoint Output]
+    Root["Root Module (13-local-modules)"]
+    Net["Networking Module"]
+    VPC["AWS VPC"]
+    PublicSN["Public Subnets"]
+    PrivateSN["Private Subnets"]
+    IGW["Internet Gateway"]
+    RTB["Route Table"]
+    RTAssoc["Route Table Association"]
+    EC2["EC2 Instance"]
+    
+    Root -->|uses| Net
+    Root -->|deploys| EC2
+    Net -->|creates| VPC
+    VPC -->|contains| PublicSN
+    VPC -->|contains| PrivateSN
+    PublicSN -->|associated with| RTB
+    RTB -->|routes to| IGW
+    IGW -->|attached to| VPC
+    EC2 -->|deployed in| PrivateSN
 ```
 
 ## 02-hcl Directory
@@ -945,3 +967,116 @@ No outputs are currently defined. You can add outputs for instance IDs, VPC deta
 - **Consistency**: Ensures resources are created with recommended configurations
 - **Maintainability**: Updates to modules can be applied across your infrastructure
 - **Community Support**: Well-documented with examples and active maintenance
+
+# Terraform Local Modules Project
+
+A comprehensive example project demonstrating the creation and usage of reusable Terraform modules, specifically focusing on networking infrastructure automation.
+
+## Project Overview
+
+This project is structured around the `13-local-modules` example, which showcases best practices for organizing Terraform code into modular, reusable components. The project deploys a complete AWS networking infrastructure including VPCs, public/private subnets, Internet Gateways, and route tables.
+
+## Networking Module
+
+The networking module provides a flexible, reusable way to create AWS VPC infrastructure. It handles the creation of VPCs with customizable subnet configurations, automatic Internet Gateway deployment for public subnets, and proper route table associations.
+
+### Module Features
+
+- **VPC Creation**: Create a VPC with a configurable CIDR block
+- **Flexible Subnet Configuration**: Define multiple subnets with individual CIDR blocks and availability zones
+- **Public/Private Subnets**: Mark subnets as public or private via configuration
+- **Automatic IGW Deployment**: Internet Gateway is automatically created and attached when at least one public subnet exists
+- **Route Table Management**: Public subnets are automatically associated with a route table that routes traffic to the Internet Gateway
+- **Validation**: Built-in CIDR block validation and availability zone verification
+
+### Module Inputs
+
+#### `vpc_config` (Required)
+Object containing VPC configuration:
+- `cidr_block` (string): CIDR block for the VPC (e.g., "10.0.0.0/16")
+- `name` (string): Name tag for the VPC
+
+#### `subnet_config` (Required)
+Map of subnet configurations keyed by subnet identifier:
+- `cidr_block` (string): CIDR block for the subnet
+- `public` (optional boolean): Set to `true` for public subnets, default is `false` (private)
+- `az` (string): AWS availability zone (e.g., "eu-west-1a")
+
+### Module Outputs
+
+- `vpc_id`: The AWS ID of the created VPC
+- `public_subnets`: Map of public subnets with subnet_id and availability_zone
+- `private_subnets`: Map of private subnets with subnet_id and availability_zone
+
+### Example Usage
+
+```hcl
+module "vpc" {
+  source = "./modules/networking"
+
+  vpc_config = {
+    cidr_block = "10.0.0.0/16"
+    name       = "my-vpc"
+  }
+
+  subnet_config = {
+    subnet_1 = {
+      cidr_block = "10.0.0.0/24"
+      az         = "eu-west-1a"
+      # public defaults to false, so this is a private subnet
+    }
+    subnet_2 = {
+      cidr_block = "10.0.1.0/24"
+      public     = true
+      az         = "eu-west-1b"
+    }
+  }
+}
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+```
+
+## Deploy Instructions
+
+1. **Initialize Terraform**:
+   ```bash
+   cd 13-local-modules
+   terraform init
+   ```
+
+2. **Validate Configuration**:
+   ```bash
+   terraform validate
+   ```
+
+3. **Plan Deployment**:
+   ```bash
+   terraform plan
+   ```
+
+4. **Apply Configuration**:
+   ```bash
+   terraform apply
+   ```
+
+5. **View Outputs**:
+   ```bash
+   terraform output
+   ```
+
+## AWS Permissions Required
+
+The AWS credentials must have permissions to:
+- Create/manage VPCs
+- Create/manage Subnets
+- Create/manage Internet Gateways
+- Create/manage Route Tables
+- Create/manage EC2 Instances
+- Describe Availability Zones
+- Query AMI data
+
+## License
+
+MIT License - See LICENSE file for details
