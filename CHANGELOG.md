@@ -37,6 +37,10 @@ Added the first Terraform project: a static website hosting solution on AWS S3. 
 
 Added the 06-resources Terraform module, a complete example of AWS infrastructure provisioning. This module demonstrates VPC creation with public subnets, internet gateway setup, routing configuration, and EC2 instance deployment with security groups. The infrastructure deploys a t2.micro EC2 instance running NGINX accessible via HTTP/HTTPS, serving as a practical learning example for AWS networking and compute resources using Terraform.
 
+## [6ce248f] - 2024-02-18
+### feat(02-hcl): add examples of HCL constructs
+Added a new HCL example file demonstrating core Terraform constructs including resource definitions for S3 buckets, data sources for external resource references, input variables with defaults, outputs, locals, and module composition. This serves as a practical reference guide for HCL syntax patterns.
+
 ## [e31300c] - 2024-02-16
 
 ### Initial commit: feat(01-benefits-iac): add IaC code for deploying VPC
