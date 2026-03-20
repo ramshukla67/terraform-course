@@ -36,16 +36,25 @@ This repository contains Terraform projects demonstrating OIDC (OpenID Connect) 
 
 ## Overview
 
-This repository contains practical Terraform examples demonstrating various AWS infrastructure patterns and best practices.
+The `15-object-validation` module shows how to implement robust validation rules within Terraform infrastructure code:
+- **Instance Validation**: Restricts EC2 instances to approved instance types using postconditions
+- **Networking Validation**: Ensures subnets are distributed across multiple availability zones for high availability
+- **Resource Checks**: Uses Terraform's `check` blocks to verify infrastructure compliance
 
-### Architecture
+## Architecture
 
-The project implements the following components:
-
-- **AWS IAM OpenID Connect Provider**: Configured to trust Terraform Cloud's identity provider (app.terraform.io)
-- **IAM Role**: `terraform-cloud-automation-admin` role that Terraform Cloud can assume via OIDC
-- **Role Policy**: Administrator access attached to the automation role
-- **S3 Bucket**: Example resource managed by Terraform Cloud
+```mermaid
+graph TD
+    A[AWS Provider] --> B[VPC Data Source]
+    A --> C[Availability Zones Data Source]
+    B --> D[Subnets with AZ Distribution]
+    D --> E[High Availability Check]
+    A --> F[Ubuntu AMI Data Source]
+    F --> G[EC2 Instance]
+    G --> H[Instance Type Validation]
+    G --> I[Cost Center Tag Check]
+    J[Variables] --> G
+```
 
 ### Files
 
@@ -127,19 +136,15 @@ The project imports three types of AWS resources:
    - Log group: `/aws/lambda/manually-created-lambda`
    - Used for storing Lambda execution logs
 
-### Project Structure
+## Project Structure
 
 ```
-proj03-import-lambda/
-├── provider.tf              # AWS provider configuration with required versions
-├── iam.tf                   # IAM role and policy imports & definitions
-├── lambda.tf                # Lambda function, URL, and code archive
-├── cloudwatch.tf            # CloudWatch log group import
-├── outputs.tf               # Output: Lambda function URL
-├── build/
-│   └── index.mjs            # Lambda handler function (Node.js 18.x)
-├── .terraform.lock.hcl      # Terraform provider lock file
-└── lambda.zip               # Generated zip archive of Lambda code
+15-object-validation/
+├── provider.tf          # Terraform version and AWS provider configuration
+├── variables.tf         # Input variables for instance type
+├── compute.tf           # EC2 instance with validation rules
+├── networking.tf        # VPC networking with AZ distribution validation
+└── .terraform.lock.hcl  # Terraform provider lock file
 ```
 
 ### How It Works
@@ -149,13 +154,17 @@ proj03-import-lambda/
 3. **Code Archiving**: The `archive_file` data source automatically zips the Lambda code
 4. **Outputs**: The Lambda Function URL is exported for easy access
 
-### Usage
+## Usage
 
 ```bash
+# Initialize Terraform
 terraform init
+
+# Validate and plan deployment
 terraform plan
+
+# Apply infrastructure
 terraform apply
-terraform output
 ```
 
 ### Key Files Explained
@@ -264,11 +273,6 @@ This is the primary Terraform configuration file that defines the VPC infrastruc
 - NAT Gateway configuration (if applicable)
 
 ## Key Features
-
-- **Infrastructure as Code** - Version-controlled cloud infrastructure definitions
-- **Modular Design** - Reusable Terraform configurations for VPC deployment
-- **AWS-native** - Leverages AWS managed services for networking
-- **Declarative Configuration** - Define desired state; Terraform handles implementation
 
 ## Getting Started with Terraform
 
@@ -419,3 +423,70 @@ After studying this module, you will understand:
 - How to reference data source outputs in resource configurations
 - How to work with AWS account and region information
 - Best practices for dynamic resource selection
+
+# Terraform Object Validation Example
+
+This project demonstrates advanced Terraform validation patterns including object validation, postconditions, and check assertions in Terraform 1.7+.
+
+### 1. Postcondition Validation
+
+**Instance Type Validation** (compute.tf)
+```hcl
+postcondition {
+  condition     = contains(local.allowed_instance_types, self.instance_type)
+  error_message = "Self invalid instance type"
+}
+```
+Enforces that launched instances must use approved types (t2.micro, t3.micro).
+
+**Subnet AZ Validation** (networking.tf)
+```hcl
+postcondition {
+  condition     = contains(data.aws_availability_zones.available.names, self.availability_zone)
+  error_message = "Invalid AZ"
+}
+```
+Ensures each subnet is created in a valid availability zone.
+
+### 2. Check Blocks
+
+**Cost Center Check** (compute.tf)
+Verifies that the EC2 instance has a CostCenter tag, helping enforce organizational tagging policies.
+
+**High Availability Check** (networking.tf)
+Ensures subnets are distributed across multiple AZs to prevent single-zone deployments.
+
+## Configuration
+
+### Variables
+
+- `instance_type` (string, default: "t2.micro"): The EC2 instance type to deploy. Must be one of the allowed types.
+
+### Provider Configuration
+
+- **Region**: eu-west-1 (Ireland)
+- **Terraform Version**: ~> 1.7
+- **AWS Provider Version**: ~> 5.0
+
+## Validation Rules Summary
+
+| Component | Validation Rule | Enforcement |
+|-----------|-----------------|-------------|
+| EC2 Instance | Allowed instance types (t2.micro, t3.micro) | Postcondition (hard fail) |
+| EC2 Instance | CostCenter tag must exist and not be empty | Check assertion (warning) |
+| Subnets | Must exist in a valid availability zone | Postcondition (hard fail) |
+| Subnets | Must be distributed across 2+ AZs | Check assertion (warning) |
+
+## Testing Validation
+
+To test the validation rules:
+
+1. **Instance Type Violation**: Modify `variables.tf` to use an unauthorized instance type (e.g., "t2.small") → applies will fail at postcondition check
+2. **Missing Tags**: Remove the CostCenter tag from instance tags → check assertion will report a warning
+3. **Single AZ Deployment**: Modify the subnet count or AZ logic to deploy to a single AZ → high_availability_check will warn
+
+## Requirements
+
+- Terraform >= 1.7.0
+- AWS Provider >= 5.0
+- AWS account with appropriate permissions to create EC2 instances, subnets, and VPCs
