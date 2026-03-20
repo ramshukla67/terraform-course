@@ -12,6 +12,11 @@ Added proj03-import-lambda, a new Terraform project demonstrating the resource i
 ### feat(10-functions): add files
 Added three new example files to the 10-functions directory: a Terraform functions example file demonstrating string manipulation (startswith, lower), mathematical operations (pow), and data transformation functions (yamldecode, jsonencode), along with supporting provider configuration and YAML data files. These are educational example files with no impact on the production codebase.
 
+## [e57dd02] - 2024-02-25
+### feat(06-resources): add files
+
+Added the 06-resources Terraform module, a complete example of AWS infrastructure provisioning. This module demonstrates VPC creation with public subnets, internet gateway setup, routing configuration, and EC2 instance deployment with security groups. The infrastructure deploys a t2.micro EC2 instance running NGINX accessible via HTTP/HTTPS, serving as a practical learning example for AWS networking and compute resources using Terraform.
+
 ## [e31300c] - 2024-02-16
 
 ### Initial commit: feat(01-benefits-iac): add IaC code for deploying VPC
