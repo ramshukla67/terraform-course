@@ -597,10 +597,13 @@ Each environment is defined with a separate `.tfvars` file:
 
 ### Key Concepts Demonstrated
 
-- **Workspaces**: Each workspace maintains its own Terraform state, allowing isolated infrastructure per environment
-- **Count Meta-Argument**: The `count` parameter enables creating multiple S3 buckets based on the `bucket_count` variable
-- **Workspace Variable Interpolation**: Using `terraform.workspace` in resource names to make buckets uniquely identifiable per environment
-- **Random Suffix Generation**: A random ID is appended to bucket names to ensure global uniqueness (S3 bucket names must be globally unique)
+- **Terraform Configuration**: Provider declaration and version constraints
+- **Resources**: Creating and managing infrastructure (`aws_s3_bucket`)
+- **Data Sources**: Referencing externally-managed resources (`data "aws_s3_bucket"`)
+- **Variables**: Input variables with type, description, and default values
+- **Outputs**: Exposing resource attributes for consumption
+- **Locals**: Internal variable definitions for re-use within the configuration
+- **Modules**: Including and composing sub-configurations
 
 # Terraform Projects
 
@@ -656,3 +659,20 @@ graph TD
     C --> G[error.html]
     E --> H[Website Endpoint Output]
 ```
+
+## 02-hcl Directory
+
+This directory contains HCL (HashiCorp Configuration Language) examples demonstrating core Terraform constructs:
+
+### File Structure
+
+- `hcl.tf`: Main example file showcasing HCL syntax and Terraform patterns
+- `module-example/`: Referenced module directory (to be created)
+
+### Use Cases
+
+These examples are useful for:
+- Learning HCL syntax and structure
+- Understanding Terraform resource and data source management
+- Seeing patterns for variable and output organization
+- Referencing module composition patterns
