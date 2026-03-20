@@ -34,12 +34,9 @@ This repository contains Terraform projects demonstrating OIDC (OpenID Connect) 
 
 ## Project 05: Terraform Cloud to AWS OIDC
 
-### Overview
+## Overview
 
-**proj03-import-lambda** is a Terraform configuration that shows how to use Terraform's `import` block to adopt existing AWS resources that were created outside of Terraform. This is useful for:
-- Bringing legacy infrastructure under Terraform management
-- Migrating existing resources into Terraform without recreating them
-- Building Terraform configurations from currently deployed infrastructure
+This repository contains practical Terraform examples demonstrating various AWS infrastructure patterns and best practices.
 
 ### Architecture
 
@@ -154,16 +151,12 @@ proj03-import-lambda/
 
 ### Usage
 
-To import these resources into your Terraform state:
-
 ```bash
-cd proj03-import-lambda
 terraform init
-terraform plan   # Review the imported resources
-terraform apply  # Bring resources under Terraform management
+terraform plan
+terraform apply
+terraform output
 ```
-
-Once imported, you can modify the Terraform configuration and run `terraform apply` to manage these resources like any other Terraform-created resource.
 
 ### Key Files Explained
 
@@ -374,3 +367,55 @@ terraform destroy  # Clean up resources
 - **AWS Provider Version:** ~> 5.0
 - **Instance Type:** t2.micro (eligible for free tier)
 - **AMI:** NGINX AMI (ami-0dfee6e7eb44d480b)
+
+# Terraform Examples Repository
+
+## Module: 07-data-sources
+
+### Purpose
+
+This module demonstrates how to use Terraform data sources to dynamically query and retrieve information about existing AWS resources without managing them directly.
+
+### Key Concepts
+
+- **AWS Data Sources**: Query existing AWS resources (AMIs, VPCs, availability zones, caller identity)
+- **Filtering**: Use filters to locate specific resources (e.g., Ubuntu 22.04 AMI)
+- **Dynamic Configuration**: Reference queried data in resource definitions
+- **Information Retrieval**: Extract account ID, region, and infrastructure details
+
+### Contents
+
+- **provider.tf**: Terraform version constraints and AWS provider configuration
+  - Terraform version >= 1.7.0, < 2.0.0
+  - AWS provider version ~> 5.0
+  - Configured for eu-west-1 region
+
+- **compute.tf**: Data sources and compute resources
+  - `aws_ami`: Dynamically retrieves the most recent Ubuntu 22.04 HVM image
+  - `aws_caller_identity`: Gets current AWS account information
+  - `aws_region`: Retrieves current region details
+  - `aws_vpc`: Queries VPCs by tags (e.g., Env = "Prod")
+  - `aws_availability_zones`: Lists available zones in the region
+  - `aws_iam_policy_document`: Defines S3 bucket policy for public read access
+  - EC2 instance using dynamically discovered AMI
+  - S3 bucket resource
+
+### Example Outputs
+
+The module exports several outputs demonstrating data source usage:
+
+- `iam_policy`: JSON-formatted IAM policy for S3 public access
+- `azs`: Available zones information
+- `prod_vpc_id`: VPC ID of the Prod environment
+- `ubuntu_ami_data`: Ubuntu 22.04 AMI ID
+- `aws_caller_identity`: Current AWS account details
+- `aws_region`: Current region information
+
+### Learning Outcomes
+
+After studying this module, you will understand:
+- How to query existing AWS infrastructure using data sources
+- How to filter resources by attributes and tags
+- How to reference data source outputs in resource configurations
+- How to work with AWS account and region information
+- Best practices for dynamic resource selection
