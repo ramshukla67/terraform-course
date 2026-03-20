@@ -8,6 +8,10 @@ Added a complete Terraform Cloud OIDC integration project (`proj05-tf-cloud-oidc
 
 Added proj03-import-lambda, a new Terraform project demonstrating the resource import feature. This project shows how to adopt an existing AWS Lambda function and its supporting infrastructure (IAM role, policy, and CloudWatch logs) into Terraform management. Includes a Node.js 18.x handler, Lambda Function URL for public HTTP access, and complete IAM/logging configuration. Useful as a reference for migrating legacy infrastructure to Terraform.
 
+## [67c6bc5] - 2024-03-20
+### feat(15-object-validation): add files
+Added new Terraform example project demonstrating object validation patterns using postconditions and check blocks. Includes EC2 instance deployment with instance type validation, subnet creation with availability zone distribution checks, and resource compliance assertions. Implements best practices for infrastructure validation in Terraform 1.7+.
+
 ## [b738d1a] - 2024-03-13
 ### feat(10-functions): add files
 Added three new example files to the 10-functions directory: a Terraform functions example file demonstrating string manipulation (startswith, lower), mathematical operations (pow), and data transformation functions (yamldecode, jsonencode), along with supporting provider configuration and YAML data files. These are educational example files with no impact on the production codebase.
